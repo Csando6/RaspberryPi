@@ -64,37 +64,37 @@ void loop() {
   //only update when there is serialdata incoming
   if(Serial.available()>0){ 
     controlinput = Serial.read();
-    
-    //This is for the motor control
+    //                               61-78-95-112-129
+    //This is for the motor control  30-60-95-120-150
     if(controlinput == '0'){ //val = 95 //stationary
       currVal[0] = 95;
     }
-    else if(controlinput == '2'){ //val = 120
-      currVal[0]=120;
+    else if(controlinput == '2'){ //val = 112
+      currVal[0]=112;
     }
-    else if(controlinput == '4'){ //val = 60
-      currVal[0]=60;
+    else if(controlinput == '4'){ //val = 78
+      currVal[0]=78;
     }
-    else if(controlinput == '6'){ //val= 150
-      currVal[0]=150;
+    else if(controlinput == '6'){ //val= 129
+      currVal[0]=129;
     }
-    else if(controlinput == '8'){ //val = 80
-      currVal[0]=30;
+    else if(controlinput == '8'){ //val = 61
+      currVal[0]=61;
     }
     else if(controlinput == '1'){ //val = 95
       currVal[1]=95;
     }
-    else if(controlinput == '3'){ //val = 120
-      currVal[1]=120;
+    else if(controlinput == '3'){ //val = 112
+      currVal[1]=112;
     }
-    else if(controlinput == '5'){ //val = 60
-      currVal[1]=60;
+    else if(controlinput == '5'){ //val = 78
+      currVal[1]=78;
     }
-    else if(controlinput == '7'){ //val = 150
-      currVal[1]=150;
+    else if(controlinput == '7'){ //val = 129
+      currVal[1]=129;
     }
-    else if(controlinput == '9'){ //val = 30
-      currVal[1]=30;
+    else if(controlinput == '9'){ //val = 61
+      currVal[1]=61;
     }
     else if(controlinput == 'A'){
       if(armbasepos < 180){
@@ -150,29 +150,40 @@ void loop() {
   
   //update the currVal to lastVal-can implement 
   if(currVal[0] > lastVal[0] ){
-    lastVal[0]++;
-    leftmotor.write(lastVal[0] );
+    lastVal[0] += 1 + (currVal[0] - lastVal[0])/16;
+    //leftmotor.write(lastVal[0] );
+    //leftmotor.write(lastVal[0] );
   }
   else if(currVal[0] < lastVal[0] ){
-    lastVal[0]--;
-    leftmotor.write(lastVal[0] );
+    lastVal[0] -= 1 - (currVal[0] - lastVal[0])/16;
+    //leftmotor.write(lastVal[0] );
+    //leftmotor.write(lastVal[0] );
   }
   else{
-    leftmotor.write(lastVal[0] );
+    //leftmotor.write(lastVal[0] );
   }
 
   if(currVal[1] > lastVal[1] ){
-    lastVal[1]++;
-    rightmotor.write(lastVal[1] );
+    //lastVal[1]++;
+    lastVal[1] += 1 + (currVal[1] - lastVal[1])/16;
+    //rightmotor.write(lastVal[1] );
+    //rightmotor.write(lastVal[1] );
   }
   else if(currVal[1] < lastVal[1] ){
-    lastVal[1]--;
-    rightmotor.write(lastVal[1] );
+    //lastVal[1]--;
+    lastVal[1] -= 1 - (currVal[1] - lastVal[1])/16;
+    //rightmotor.write(lastVal[1] );
+    //rightmotor.write(lastVal[1] );
   }
   else{
-    rightmotor.write(lastVal[1] );
+    //rightmotor.write(lastVal[1] );
   }
-  
+    
+
+  //write value to robot
+  leftmotor.write(lastVal[0] );
+  rightmotor.write(lastVal[1] );
+
   //after serial data was read update all appropriate motors/servos/relays  
   // armbase.write(armbasepos);
 }
