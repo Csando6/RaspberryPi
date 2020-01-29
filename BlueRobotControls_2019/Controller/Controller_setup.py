@@ -31,7 +31,8 @@ class Controller:
 # ly = left track
 # ry = right track
 message = {}
-MAXVAL = 1000
+counter = 0
+MAXVAL = 10000
 
 #Original: COM6
 serxb = serial.Serial('/dev/ttyUSB0', 9600)     #assumes xbee is connected to the COM6 port this will have to be changed by checking where the xbee is connected in your system
@@ -164,17 +165,16 @@ while True:
                 print("null y-axis")
 
     #send message and ping receiver
-    if(counter == 0)
-        if(message.len <= 0)
+    if(counter == 0):
+        if(len(message) > 0):
             serxb.write(message.popitem()[1].encode() ) #send message to receiver
-        else
+        else:
             serxb.write("*".encode() ) #ping receiver
-    else
         #do nothing
 
     # update counter, if greater than MAXVAL, reset to 0
-    counter ++
-    if(counter > MAXVAL)
+    counter = counter + 1
+    if(counter > MAXVAL):
         counter = 0
 
             
