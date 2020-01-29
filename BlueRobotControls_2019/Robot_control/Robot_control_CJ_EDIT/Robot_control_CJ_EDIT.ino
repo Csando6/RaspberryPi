@@ -183,7 +183,5 @@ void loop() {
   //write value to robot
   leftmotor.write(lastVal[0] );
   rightmotor.write(lastVal[1] );
-
-  //after serial data was read update all appropriate motors/servos/relays  
-  // armbase.write(armbasepos);
+  
 }

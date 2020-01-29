@@ -17,7 +17,6 @@ import pygame
 
 #This creates the Controller class
 class Controller:
-
     def __init__(self):
         pygame.init()
         pygame.joystick.init()
@@ -27,9 +26,15 @@ class Controller:
         self.axescount = self.joystick.get_numaxes()
         self.buttcount = self.joystick.get_numbuttons()
 #end of controller class
-        
 
-serxb = serial.Serial('COM6', 9600)     #assumes xbee is connected to the COM6 port this will have to be changed by checking where the xbee is connected in your system
+# Key mapping
+# ly = left track
+# ry = right track
+message = {}
+MAXVAL = 1000
+
+#Original: COM6
+serxb = serial.Serial('/dev/ttyUSB0', 9600)     #assumes xbee is connected to the COM6 port this will have to be changed by checking where the xbee is connected in your system
 test = Controller()                     #creates controller class under name test to the first joystick connected to pc
 serxb.close()                           #makes sure the old port isn't open
 serxb.open()                            #opens up port for communication
@@ -54,10 +59,10 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.JOYAXISMOTION:
 
-                        ###Encoding Table###
+            ###Encoding Table###
             #This needs to expanded so it includes all outputs and what they do
-#Left Motor: Stop = 0, Forward = 2, Forward+ = 6, Backward = 4, Backward- = 8
-#Right Motor: Stop = 1, Forward = 3, Forward+ = 7, Backward = 5, Backward- = 9
+            #Left Motor: Stop = 0, Forward = 2, Forward+ = 6, Backward = 4, Backward- = 8
+            #Right Motor: Stop = 1, Forward = 3, Forward+ = 7, Backward = 5, Backward- = 9
             
             if abs(lx - test.joystick.get_axis(0)) > 0.1:
                 lx = test.joystick.get_axis(0)      #if the change in the axis is great enough lx becomes the X axis of the left joystick
@@ -66,15 +71,20 @@ while True:
                 ly = test.joystick.get_axis(1)      #if the change in the axis is great enough ly becomes the Y axis of the left joystick
                 print('Left Y is ', test.joystick.get_axis(1))    #testing purposes
                 if 0.25 >= ly >= -0.25:
-                    serxb.write("0".encode())
+                    #serxb.write("0".encode())
+                    message.update({"ly":"0"})
                 elif 0.75 >= ly > 0.25:
-                    serxb.write("4".encode())
+                    #serxb.write("4".encode())
+                    message.update({"ly":"4"})
                 elif ly > 0.75:
-                    serxb.write("8".encode())
+                    # serxb.write("8".encode())
+                    message.update({"ly":"8"})
                 elif -0.25 > ly >= -0.75:
-                    serxb.write("2".encode())
+                    # serxb.write("2".encode())
+                    message.update({"ly":"2"})
                 elif ly < -0.75:
-                    serxb.write("6".encode())
+                    # serxb.write("6".encode())
+                    message.update({"ly":"6"})
             if abs(rx - test.joystick.get_axis(2)) > 0.1:
                 rx = test.joystick.get_axis(2)      #if the change in the axis is great enough rx becomes the X axis of the right joystick
                 print(test.joystick.get_axis(2))    #testing purposes
@@ -82,28 +92,31 @@ while True:
                 ry = test.joystick.get_axis(3)      #if the change in the axis is great enough ry becomes the Y axis of the right joystick
                 print('Right Y is ', test.joystick.get_axis(3))    #testing purposes
                 if 0.25 >= ry >= -0.25:
-                    serxb.write("1".encode())
+                    # serxb.write("1".encode())
+                    message.update({"ry":"1"})
                 elif 0.75 >= ry > 0.25:
-                    serxb.write("5".encode())
+                    # serxb.write("5".encode())
+                    message.update({"ry":"5"})
                 elif ry > 0.75:
-                    serxb.write("9".encode())
+                    # serxb.write("9".encode())
+                    message.update({"ry":"9"})
                 elif -0.25 > ry >= -0.75:
-                    serxb.write("3".encode())
+                    # serxb.write("3".encode())
+                    message.update({"ry":"3"})
                 elif ry < -0.75:
-                    serxb.write("7".encode())
-
-
-# Button to int format (Playstation buttons have not been recorded)
-# A = 0 = Square
-# B = 1 =
-# X = 2
-# Y = 3
-# LB = 4
-# RB = 5
-# Back = 6
-# Start = 7
-# Left Joystick Button = 8
-# Right Joystick Button = 9
+                    # serxb.write("7".encode())
+                    message.update({"ry":"7"})
+        # Button to int format (Playstation buttons have not been recorded)
+        # A = 0 = Square
+        # B = 1 =
+        # X = 2
+        # Y = 3
+        # LB = 4
+        # RB = 5
+        # Back = 6
+        # Start = 7
+        # Left Joystick Button = 8
+        # Right Joystick Button = 9
             
         if event.type == pygame.JOYBUTTONDOWN:
             if test.joystick.get_button(0):
@@ -149,5 +162,19 @@ while True:
             if(hatlist[1] == 0):
                 serxb.write("Y".encode())
                 print("null y-axis")
+
+    #send message and ping receiver
+    if(counter == 0)
+        if(message.len <= 0)
+            serxb.write(message.popitem()[1].encode() ) #send message to receiver
+        else
+            serxb.write("*".encode() ) #ping receiver
+    else
+        #do nothing
+
+    # update counter, if greater than MAXVAL, reset to 0
+    counter ++
+    if(counter > MAXVAL)
+        counter = 0
 
             
