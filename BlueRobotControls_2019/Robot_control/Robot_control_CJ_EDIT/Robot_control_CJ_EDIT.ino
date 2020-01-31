@@ -11,8 +11,8 @@
 
 #include <Servo.h>
 //note when using the servo library the frequency is not important because the way servo signals work, be sure to understand why this is...
-int COUNTER = 3;  //remove
-int timer[2] = {0,0};//remove
+const int COUNTER = 1000; //max millsc for signal to return
+int timer = 0;  //timer for COUNTER
 int currVal[2] = {95,95}; //will hold the live update
 int lastVal[2] = {95,95}; //will update to the currVal, will prevent sudden jerk of motors
 
@@ -62,8 +62,10 @@ void loop() {
   Serial.print("\n");
   
   //only update when there is serialdata incoming
-  if(Serial.available()>0){ 
+  if(Serial.available() > 0){
     controlinput = Serial.read();
+    COUNTER = 0;
+
     //                               61-78-95-112-129
     //This is for the motor control  30-60-95-120-150
     if(controlinput == '0'){ //val = 95 //stationary
@@ -137,7 +139,10 @@ void loop() {
       digitalWrite(armupper0, LOW);
       digitalWrite(armupper1, HIGH);
     }
-  } 
+  }
+  else{
+    COUNTER++;
+  }
   
   if(armstatel == 'X'){
     digitalWrite(armlower0, LOW);
@@ -180,8 +185,14 @@ void loop() {
   }
     
 
-  //write value to robot
-  leftmotor.write(lastVal[0] );
-  rightmotor.write(lastVal[1] );
+  
+  if(timer < COUNTER ){ //write value to robot
+    leftmotor.write(lastVal[0] );
+    rightmotor.write(lastVal[1] );
+  }
+  else{ //default off values, no signal to receiver
+    leftmotor.write(95);
+    rightmotor.write(95);
+  }
   
 }
